@@ -15,21 +15,30 @@
 <!--     <link rel="stylesheet" type="text/css" href="css/index.css" /> -->
     <title>Hello World</title>
 
-    <button onclick="aceleracion()">Click me</button>
+ <style>
+ div#dot {
+ border-radius: 14px;
+ width: 25px;
+ height: 25px;
+ background: #ff0000;
+ position: absolute;
+ top: 0px;
+ left: 0px;
+ }
+ </style>
+
+    <button onclick="aceleracion()">Get data</button>
 </head>
 <body>
-
-
-   
     <div id="accelerometerData">Obtaining data…</div>
-
 <button id="startBtn"
  onclick="startWatch()">start</button>
  <button id="stopBtn"
  onclick="stopWatch()">stop</button>
  <div id="accelerometerData">Obtaining data...</div>
+ <div id="dot"></div>
 
-    
+
     <script type="text/javascript" src="cordova.js">
     </script>
     <script type="text/javascript">
@@ -38,10 +47,10 @@
 
     // The device is ready so let's
 // obtain the current accelerometer data
+
 function onDeviceReady() {
  navigator.accelerometer.getCurrentAcceleration(
  onSuccess, onError);
-
 startWatch();
 
 
@@ -58,13 +67,70 @@ function aceleracion(){
  // Run after successful transaction
 // Let's display the accelerometer data
 function onSuccess(acceleration) {
- var accElement =
+    var element =
  document.getElementById('accelerometerData');
- accElement.innerHTML =
+ element.innerHTML =
  'Acceleration X: ' + acceleration.x + '<br />' +
  'Acceleration Y: ' + acceleration.y + '<br />' +
  'Acceleration Z: ' + acceleration.z + '<br />' +
- 'Timestamp: ' + acceleration.timestamp;
+ 'Timestamp: ' + acceleration.timestamp +
+ '<br />';
+    // Initial X Y positions
+ var x = 0;
+ var y = 0;
+ // Velocity / Speed
+ var vx = 0;
+ var vy = 0;
+ // Acceleration
+ var accelX = 0;
+ var accelY = 0;
+ // Multiplier to create proper pixel measurements
+ var vMultiplier = 100;
+ // Create a reference to our div elements
+ var dot = document.getElementById('dot');
+ var accelElement =
+ document.getElementById('accelerometerData');
+
+accelX = acceleration.x;
+accelY = acceleration.y;
+vy = vy + -(accelY);
+vx = vx + accelX;
+y = parseInt(y + vy * vMultiplier);
+x = parseInt(x + vx * vMultiplier);
+if (x<0) { x = 0; vx = 0; }
+if (y<0) { y = 0; vy = 0; }
+if (x>document.documentElement.clientWidth-radius) {
+ x = document.documentElement.clientWidth-radius; vx = 0;
+}
+if (y>document.documentElement.clientHeight-radius) {
+ y = document.documentElement.clientHeight-radius; vy = 0;
+}
+
+
+// Apply the position to the dot element
+dot.style.top = y + "px";
+dot.style.left = x + "px";
+// Output the acceleration results to the screen
+accelElement.innerHTML =
+ 'Acceleration X: ' + acceleration.x + '<br />' +
+ 'Acceleration Y: ' + acceleration.y + '<br />' +
+ 'Acceleration Z: ' + acceleration.z + '<br />' +
+ 'Timestamp: ' + acceleration.timestamp +
+ '<br />' +
+ 'Move Top: ' + y + 'px<br />' +
+ 'Move Left: ' + x + 'px';
+
+
+
+ // // The rest of the code will go here
+
+ // var accElement =
+ // document.getElementById('accelerometerData');
+ // accElement.innerHTML =
+ // 'Acceleration X: ' + acceleration.x + '<br />' +
+ // 'Acceleration Y: ' + acceleration.y + '<br />' +
+ // 'Acceleration Z: ' + acceleration.z + '<br />' +
+ // 'Timestamp: ' + acceleration.timestamp;
 }
 
 // Run if we face an error
@@ -73,20 +139,17 @@ function onError(error) {
  // Handle any errors we may face
  alert('error');
 }
-
+// The radius for our circle object
+var radius = 50;
  var watchID = null;
 
 
 function startWatch() {
- // Set the frequency of updates
- // from the acceleration
- var options = { frequency: 3000 };
- // Set attributes for control buttons
- document.getElementById('startBtn').disabled = true;
- document.getElementById('stopBtn').disabled = false;
+ var options = { frequency: 100 };
  // Assign watchAcceleration to the watchID variable
  // and pass through the options array
- watchID = navigator.accelerometer.watchAcceleration(
+ watchID =
+ navigator.accelerometer.watchAcceleration(
  onSuccess, onError, options);
 }
 
