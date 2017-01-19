@@ -14,6 +14,8 @@
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
 <!--     <link rel="stylesheet" type="text/css" href="css/index.css" /> -->
     <title>Hello World</title>
+
+    <button onclick="aceleracion()">Click me</button>
 </head>
 <body>
    
@@ -27,9 +29,14 @@ function onDeviceReady() {
  navigator.accelerometer.getCurrentAcceleration(
  onSuccess, onError);
 }
+
+function aceleracion(){
+     navigator.accelerometer.getCurrentAcceleration(
+ onSuccess, onError);
+}
+
  document.addEventListener('deviceready',
  onDeviceReady, false);
-
 
  // Run after successful transaction
 // Let's display the accelerometer data
