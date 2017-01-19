@@ -18,16 +18,33 @@
     <button onclick="aceleracion()">Click me</button>
 </head>
 <body>
+
+
    
     <div id="accelerometerData">Obtaining data…</div>
+
+<button id="startBtn"
+ onclick="startWatch()">start</button>
+ <button id="stopBtn"
+ onclick="stopWatch()">stop</button>
+ <div id="accelerometerData">Obtaining data...</div>
+
+    
     <script type="text/javascript" src="cordova.js">
     </script>
     <script type="text/javascript">
+
+
+
     // The device is ready so let's
 // obtain the current accelerometer data
 function onDeviceReady() {
  navigator.accelerometer.getCurrentAcceleration(
  onSuccess, onError);
+
+startWatch();
+
+
 }
 
 function aceleracion(){
@@ -56,6 +73,42 @@ function onError(error) {
  // Handle any errors we may face
  alert('error');
 }
+
+ var watchID = null;
+
+
+function startWatch() {
+ // Set the frequency of updates
+ // from the acceleration
+ var options = { frequency: 3000 };
+ // Set attributes for control buttons
+ document.getElementById('startBtn').disabled = true;
+ document.getElementById('stopBtn').disabled = false;
+ // Assign watchAcceleration to the watchID variable
+ // and pass through the options array
+ watchID = navigator.accelerometer.watchAcceleration(
+ onSuccess, onError, options);
+}
+
+function stopWatch() {
+ if (watchID) {
+ navigator.accelerometer.clearWatch(watchID);
+ watchID = null;
+ var element =
+ document.getElementById('accelerometerData');
+ element.innerHTML =
+ 'No longer watching your acceleration.';
+ // Set attributes for control buttons
+ document.getElementById('startBtn').disabled =
+ false;
+ document.getElementById('stopBtn').disabled = true;
+ }
+}
+
+
+
+
+
 </script>
     
 
